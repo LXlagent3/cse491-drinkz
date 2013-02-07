@@ -12,6 +12,15 @@ import csv                              # Python csv package
 
 from . import db                        # import from local package
 
+
+def csv_reader(fp):
+    reader = csv.reader(fp)
+
+    for each_line in reader:
+        if len(each_line) == 0 or line[0].startswith('#'):
+            continue
+        yield line
+
 def load_bottle_types(fp):
     """
     Loads in data of the form manufacturer/liquor name/type from a CSV file.
@@ -26,13 +35,13 @@ def load_bottle_types(fp):
 
     x = []
     n = 0
-    for line in reader:
-        if line[0].startswith('#'):
-            continue
-        
-        (mfg, name, typ) = line
-        n += 1
-        db.add_bottle_type(mfg, name, typ)
+    try:
+        for mfg, name, typ in reader:
+            n+=1
+            db.add_bottle_type(mfg, name, typ)
+    except ValueError:
+        print "Invalid Line."
+        pass
 
     return n
 
@@ -53,8 +62,12 @@ def load_inventory(fp):
 
     x = []
     n = 0
-    for (mfg, name, amount) in reader:
-        n += 1
-        db.add_to_inventory(mfg, name, amount)
+    try:
+        for mfg, name, amount in reader:
+            n+=1
+            db.add_to_inventory(mfg, name, amount)
+    except ValueError:
+        print "Invalid Line."
+        pass
 
     return n
