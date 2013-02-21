@@ -181,4 +181,12 @@ def test_script_load_liquor_inventory_1():
 
     assert exit_code == 0, 'non zero exit code %s' % exit_code
 
+def test_check_inventory_for_type():
+    db._reset_db
+    db.add_bottle_type('Johnnie Walker', 'Black Label', 'blended scotch')
+    db.add_to_inventory('Johnnie Walker', 'Black Label', '1000 ml')
 
+    n = []
+    for mfg, liquor in db.check_inventory_type('blended scotch'):
+        n.append((mfg, liquor))
+    assert n == [('Johnnie Walker', 'Black Label')], n
