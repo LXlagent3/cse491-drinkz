@@ -68,8 +68,18 @@ def check_inventory_type(Type):
             yield (m, l)
     
 def get_liquor_amount(mfg, liquor):
-    if (mfg, liquor) in _inventory_db:
-        return _inventory_db[(mfg, liquor)]
+    AmountList = []
+    Total = 0.0
+    for each in _inventory_db:
+        m = each[0]
+        l = each[1]
+        temp = _inventory_db[each]
+        if mfg == m and liquor == l:
+            AmountList.append(temp)
+    for amount in AmountList:
+        Total+= float(amount)
+    return Total
+
 
 def get_liquor_inventory():
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
