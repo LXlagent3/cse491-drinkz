@@ -2,19 +2,38 @@
 Database functionality for drinkz information.
 """
 
-# private singleton variables at module level
-_bottle_types_db = set()
+import convert
+from cPickle import dump, load
+
+_bottle_types_db = set(tuple())
 _inventory_db = {}
-_recipes_db = set()
+
+_recipe_db = {}
 
 def _reset_db():
     "A method only to be used during testing -- toss the existing db info."
-    global _bottle_types_db, _inventory_db, _recipes_db
-    _bottle_types_db = set()
+    global _bottle_types_db, _inventory_db, _recipe_db
+    _bottle_types_db = set(tuple())
     _inventory_db = {}
-    _recipes_db = set()
-# exceptions in Python inherit from Exception and generally don't need to
-# override any methods.
+    _recipe_db = {}
+
+def save_db(filename):
+    fp = open(filename, 'wb')
+
+    tosave = (_bottle_types_db, _inventory_db, _recipe_db)
+    dump(tosave, fp)
+
+    fp.close()
+
+def load_db(filename):
+    global _bottle_types_db, _inventory_db, _recipe_db
+    fp = open(filename, 'rb')
+
+    loaded = load(fp)
+    (_bottle_types_db, _inventory_db, _recipe_db) = loaded
+
+    fp.close()
+
 class LiquorMissing(Exception):
     pass
 class DuplicateRecipeName(Exception):
@@ -28,6 +47,7 @@ def _check_bottle_type_exists(mfg, liquor):
     for (m, l, _) in _bottle_types_db:
         if mfg == m and liquor == l:
             return True
+
     return False
 
 def add_to_inventory(mfg, liquor, amount):
@@ -36,72 +56,59 @@ def add_to_inventory(mfg, liquor, amount):
         err = "Missing liquor: manufacturer '%s', name '%s'" % (mfg, liquor)
         raise LiquorMissing(err)
 
-    Total = convert_ml(amount)
-    
-    if (mfg, liquor) in _inventory_db:
-        _inventory_db[(mfg, liquor)] += Total
-    else:
-        _inventory_db[(mfg, liquor)] = Total
+    if check_inventory(mfg, liquor):
+	
+        new_amount = convert.convert_ml(amount)
+        old_amount = get_liquor_amount(mfg, liquor)
+        new_total = float(old_amount) + float(new_amount)
+        _inventory_db[(mfg, liquor)] = str(new_total)+' ml'
 
-def convert_ml(amount):
-    Total = []
-    Total = amount.split(" ")
-    TotalAmount = 0.0
-    if Total[1].lower() == "ml":
-        TotalAmount += float(Total[0])
-    elif Total[1].lower() == "oz":
-        TotalAmount += float(Total[0]) * 29.5735
-    elif Total[1].lower() == "gallon":
-        TotalAmount += float(Total[0]) * 3785.41
-    elif Total[1].lower() == "liter":
-        TotalAmount += float(Total[0]) * 1000
-    return TotalAmount
+
+    else:    
+        _inventory_db[(mfg, liquor)] =  amount
 
 def check_inventory(mfg, liquor):
-    if (mfg, liquor) in _inventory_db:
-        return True
+    for key in _inventory_db:
+        if mfg == key[0] and liquor == key[1]:
+            return True
+        
     return False
 
-def check_inventory_type(Type):
-    for (m, l) in _inventory_db:
-        if (m, l, Type) in _bottle_types_db:
-            yield (m, l)
-    
 def get_liquor_amount(mfg, liquor):
-    AmountList = []
-    Total = 0.0
-    for each in _inventory_db:
-        m = each[0]
-        l = each[1]
-        temp = _inventory_db[each]
-        if mfg == m and liquor == l:
-            AmountList.append(temp)
-    for amount in AmountList:
-        Total+= float(amount)
-    return Total
+    "Retrieve the total amount of any given liquor currently in inventory."
+    amounts = []
+    for key in _inventory_db:
+        if mfg == key[0] and liquor == key[1]:
+           amounts.append(_inventory_db[key])
+            
+    total_ml = 0.0
 
+    for i in amounts:
+        total_ml += float(convert.convert_ml(i))    
 
-def get_liquor_inventory():
+    return total_ml 
+
+def get_liquor_inventory(): 
     "Retrieve all liquor types in inventory, in tuple form: (mfg, liquor)."
-    for k,v in _inventory_db.iteritems():
-        m = k[0]
-        l = k[1]
-        yield m, l
+    for key in _inventory_db:
+        yield key[0], key[1]
 
-def add_recipe(inputreceipe):
-    for receipes in _recipes_db:
-        if receipes.name == inputreceipe.name:
-            err = "Duplicate Recipes: %s", inputreceipe.name
-            raise DuplicateRecipeName(err)
-    _recipes_db.add(inputreceipe)
-        
+def add_recipe(r):
+    
+    if r.name not in _recipe_db:
+        _recipe_db[r.name]=r
+    else:
+        raise DuplicateRecipeName()
+    
 def get_recipe(name):
-    for receipes in _recipes_db:
-        if receipes.name == name:
-            return receipes
-        
+    if name not in _recipe_db:
+	return None
+    return _recipe_db[name]
+
 def get_all_recipes():
-    tempset = set()
-    for receipes in _recipes_db:
-        tempset.add(receipes)
-    return tempset
+    
+    return _recipe_db.values()
+
+def get_all_recipe_names():
+    return _recipe_db.keys()
+
