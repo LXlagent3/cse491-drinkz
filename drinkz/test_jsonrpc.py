@@ -100,6 +100,23 @@ def test_json_liquor_inventory():
 
     
 
+def test_json_add_liquor_type():
+    db._reset_db() 
+    call_remote(method='add_liquor_type', params = ['Johnnie Walker', 'black label', 'blended scotch'], id='1')
     
+                   
+def test_json_add_to_inventory():
+    db._reset_db()
+    db.add_bottle_type('Johnnie Walker', 'black label', 'blended scotch')
+    call_remote(method='add_to_inventory', params = ['Johnnie Walker', 'black label', '10 ml'], id='1')
+    
+
+def test_json_add_recipe():
+    db._reset_db()
+    Name = 'scotch on the rocks'
+    current = [('blended scotch', '8 oz')]
+    call_remote(method='add_recipe', params = [Name, current], id='1')
+
+      
                 
                       
