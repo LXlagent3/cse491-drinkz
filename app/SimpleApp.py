@@ -139,7 +139,4 @@ if __name__ == '__main__':
     app = SimpleApp()
     
     httpd = make_server('', port, app)
-    print "Serving on port %d..." % port
-    print "Try using a Web browser to go to http://%s:%d/" % \
-          (socket.getfqdn(), port)
     httpd.serve_forever()

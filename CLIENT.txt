@@ -1,0 +1,2 @@
+goto folder app, run SimpleApp.py to achieve host and port then run testApp.py. So that python testApp.py host port
+

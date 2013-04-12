@@ -33,7 +33,7 @@ def form(args):
 
     mSocket.send("GET /recv?add=4&to=6 HTTP/1.0\r\n\r\n")
     text = ""
-    while 1:
+    while True:
         buf = mSocket.recv(1000)
         if not buf:
             break
@@ -52,15 +52,15 @@ def image(args):
 
     mSocket.send("GET /helmet HTTP/1.0\r\n\r\n")
     fp = mSocket.makefile("request_image")
-    for line in fp:
-        if "Content-Length: " in line:
-           length = int(line.strip("Content-Length: "))
+    for eachline in fp:
+        if "Content-Length: " in eachline:
+           length = int(eachline.strip("Content-Length: "))
            break
         
     fp2 = open("Spartan-helmet-Black-150-pxls.gif","r")
     text2 = ""
-    for line in fp2:
-        text2+=line
+    for eachline in fp2:
+        text2+=eachline
     
     mSocket.close()
    
