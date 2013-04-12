@@ -1,0 +1,4 @@
+
+# recipe test
+Recipe1, bacardi, 5 oz, jack whiskey, 6 oz
+Recipe2,blue swan vodka,10 liters,bacardi limon,11 gallons,jim beam,12 oz

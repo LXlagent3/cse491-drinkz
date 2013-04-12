@@ -290,11 +290,50 @@ body {font-size: 18px;}
             liquor_in.append(tup)
         print type(liquor_in[0])
         return liquor_in
-    
+
+    def rpc_add_liquor_type(self, mfg, liquor, typ):
+        db.add_bottle_type(mfg, liquor, typ)
+
+    def rpc_add_to_inventory(self, mfg, liquor, amount):
+        db.add_to_inventory(mfg, liquor, amount)
+
+    def rpc_add_recipe(self, name, ingredients):
+        r = recipes.Recipe(name, ingredients) 
+        db.add_recipe(r)
+        
 def form():
     return """
 <form action='recv'>
 Amount(Please include units)<p></p> <input type='text' name='amount' size'20'>
+<input type='submit'>
+</form>
+"""
+
+def recipe_form():
+    return """
+<form action='recvRecipe'>
+Recipe Name <input type='text' name='name' size'20'><p>
+Ingredients(please separate with commas): ing1, amt1, ing2, amt2, ... etc)<input type='text' name='ingredients' size'20'><p>
+<input type='submit'>
+</form>
+"""
+
+def liquor_types_form():
+    return """
+<form action='recvLiquorTypes'>
+Manufacturer <input type='text' name='man' size'20'><p>
+Name <input type='text' name='name' size'20'><p>
+Type <input type='text' name='type' size'20'><p>
+<input type='submit'>
+</form>
+"""
+
+def liquor_inventory_form():
+    return """
+<form action='recvInventory'>
+Manufacturer <input type='text' name='man' size'20'><p>
+Name <input type='text' name='name' size'20'><p>
+Amount <input type='text' name='amount' size'20'><p>
 <input type='submit'>
 </form>
 """

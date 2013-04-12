@@ -76,4 +76,43 @@ def data_reader(fp):
             continue
         yield mfg, name, value
 		
-			
+def recipe_reader(fp):
+
+    reader = csv.reader(fp)
+    for line in reader:
+	try:
+            if line[0].startswith('#'):
+		continue
+	    if not line[0].strip():
+		continue
+	except IndexError:
+            pass
+        try:
+            (recipe) = line
+        except ValueError:
+            continue
+        yield recipe
+        
+def load_recipes(fp):
+    new_reader = recipe_reader(fp)
+    
+    index = 0
+    while(True):
+        try:
+            for(recipe) in new_reader: 
+                name = recipe[0]  
+                count = 1
+                ingredients = []
+                while(i<len(recipe)): 
+                    Name = recipe[i]
+                    Amount = recipe[i+1]
+                    Tuple = (Name, Amount)
+                    ingredients.append(Tuple)
+                    count+=2
+                r = recipes.Recipe(name, ingredients)
+                db.add_recipe(r)                index += 1
+                
+            new_reader.next()
+        except StopIteration:
+            break
+    return index

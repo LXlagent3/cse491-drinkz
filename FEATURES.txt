@@ -1,0 +1,11 @@
+Feature
+
+Student A wants to go to a party which require each one to bring their own wine.
+He goes to the official website of the specific party to get some ideas of others.
+Unfortunately, the average drink rating for the party is way
+above any of those in his drink history and the price he could afford.
+So, student A needs to keep searching the party page for a more
+acceptable party to go to.
+Party page should display the basic info such as time location, total number of people 
+registered, rating by table. Also it should include the info of the alcohol such as price 
+and level.
