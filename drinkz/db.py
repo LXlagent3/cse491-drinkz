@@ -18,21 +18,79 @@ def _reset_db():
     _recipe_db = {}
 
 def save_db(filename):
-    fp = open(filename, 'wb')
 
-    tosave = (_bottle_types_db, _inventory_db, _recipe_db)
-    dump(tosave, fp)
+    try:
+        os.unlink(filename)
+    except OSError:
+        pass
 
-    fp.close()
+    db = sqlite3.connect(filename)
+
+    with db:
+        c = db.cursor()
+
+        c.execute("CREATE TABLE BottleTypes(mfg STRING, liquor STRING, typ STRING)")
+        c.execute("CREATE TABLE Inventory(mfg STRING, liquor STRING, amount STRING)")
+        c.execute("CREATE TABLE Recipes(name STRING, ingredients BUFFER)")
+
+
+        for (m, l, typ) in _bottle_types_db:
+            c.execute("insert into BottleTypes values (?, ?, ?)", (m, l, typ))
+        for (m, l) in _inventory_db:
+            mfg = m
+            liquor = l
+            amount = _inventory_db[(mfg, liquor)]
+            c.execute("insert into Inventory values (?, ?, ?)", (mfg, liquor, amount))
+
+        for key in _recipe_db:
+            templist = _recipe_db[key].ingredients 
+            mList = ""
+            for item in templist:
+                liquor, amt = item
+                mList += "{}:{};".format(liquor, amt)
+            buflist = buffer(mList[:-1]) 
+
+            c.execute("insert into Recipes values (?, ?)", (key, buflist)) 
+
+        db.commit()
+        c.close()
 
 def load_db(filename):
-    global _bottle_types_db, _inventory_db, _recipe_db
-    fp = open(filename, 'rb')
 
-    loaded = load(fp)
-    (_bottle_types_db, _inventory_db, _recipe_db) = loaded
+    db = sqlite3.connect(filename)
+    db.text_factory = str
 
-    fp.close()
+    with db:
+
+        c = db.cursor()
+
+        c.execute("SELECT * FROM BottleTypes") 
+        rows = c.fetchall()
+        for row in rows:
+            mfg,liquor,typ = row
+            
+            _bottle_types_db.add((mfg,liquor,typ))
+
+        c.execute("SELECT * FROM Inventory") 
+        rows = c.fetchall()
+        for row in rows:
+            mfg,liquor,amt = row
+            _inventory_db[(mfg, liquor)]=amt
+
+        c.execute("SELECT * FROM Recipes") 
+        rows = c.fetchall()
+        for row in rows:
+            name,ingredients = row
+            mList = []
+            for t in str(ingredients).split(';'): 
+                liq, amt = t.split(':') 
+                mList.append((liq, amt)) 
+            ing_list = mList            
+            r = recipes.Recipe(name,ing_list) 
+            add_recipe(r) 
+
+        db.commit()
+        c.close()
 
 class LiquorMissing(Exception):
     pass
@@ -101,9 +159,9 @@ def add_recipe(r):
         raise DuplicateRecipeName()
     
 def get_recipe(name):
-    if name not in _recipe_db:
-	return None
-    return _recipe_db[name]
+        if name not in _recipe_db:
+            return None
+        return _recipe_db[name]
 
 def get_all_recipes():
     

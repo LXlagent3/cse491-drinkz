@@ -1,22 +1,22 @@
 #! /usr/bin/env python
 import sys
 import _mypath
+import random, socket
 from wsgiref.simple_server import make_server
+from drinkz import db
 from drinkz.app import SimpleApp
-from drinkz.load_bulk_data import load_inventory, load_bottle_types
-import drinkz.db, drinkz.recipes
-
-filename = "bin/test_database"
-drinkz.db.load_db(filename)
 
 if __name__ == '__main__':
-    import random, socket
-    port = random.randint(8000, 9999)
-
+    port = random.randint(1024, 10000)   
     app = SimpleApp()
-
+    try:
+    	db.load_db('bin/test_database')
+    except IOError:
+    	print "Error! Database file not found -- no data imported."
+    	pass
+    	    
     httpd = make_server('', port, app)
-    print "On port %d..." % port
-    print "Using a browser to go to http://%s:%d/" % (socket.getfqdn(), port)
+    print "Serving on port %d..." % port
+    print "Try using a Web browser to go to http://%s:%d/" % \
+          (socket.getfqdn(), port)
     httpd.serve_forever()
-

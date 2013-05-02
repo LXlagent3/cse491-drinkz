@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from wsgiref.simple_server import make_server
 import urlparse
-import simplejson
+import json
 
 import db, recipes, convert
 
@@ -231,7 +231,52 @@ body {font-size: 18px;}
 
         start_response('200 OK', list(html_headers))
         return [data]
+    
+    def login(self, environ, start_response):
+            content_type = 'text/html'
+            formdata = environ['QUERY_STRING']
+            results = urlparse.parse_qs(formdata)
+            try:
+                    name = results['user'][0].strip()
+                    passw = results['passw'][0].strip()
+            except KeyError:
+                    name = ""
+                    passw = ""
+            if db.verify_user(name,passw)!=False:
+                k = str(db.verify_user(name,passw))
+                usernames[k] = name
+                headers = list(html_headers)
+                headers.append(('Location', '/index'))
+                headers.append(('Set-Cookie', 'Name=%s' % k))
+                start_response('302 Found', headers)
+                return ["Redirect to /index..."]
+            else:
+                headers = list(html_headers)
+                headers.append(('Location', '/login'))
+                start_response('302 Found', headers)
+                return ["Redirect to /login..."]
 
+    def logout(self, environ, start_response):
+            if 'HTTP_COOKIE' in environ:
+                c = SimpleCookie(environ.get('HTTP_COOKIE', ''))
+                if 'Name' in c:
+                    key = c.get('Name').value
+                    name1_key = key
+                    print key
+
+                    if key in usernames:
+                       del usernames[key]
+                       print 'DELETING'
+
+            pair = ('Set-Cookie',
+                    'Name=deleted; Expires=Thu, 01-Jan-1970 00:00:01 GMT;')
+            headers = list(html_headers)
+            headers.append(('Location', '/login'))
+            headers.append(pair)
+
+            start_response('302 Found', headers)
+            return ["Redirect to /login..."]
+    
     def dispatch_rpc(self, environ, start_response):
         
         if environ['REQUEST_METHOD'].endswith('POST'):

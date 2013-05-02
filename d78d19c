@@ -1,0 +1,36 @@
+* [33mb0038c5 ([1;36mHEAD[m[33m, [1;31morigin/master[m[33m, [1;32mmaster[m[33m)[m hw5
+* [33m3576097[m hw5
+* [33me16291f[m hw5
+* [33md78d19c[m hw5
+* [33m2e85a49 ([1;32mHomework3[m[33m)[m HW4
+* [33m441f5c9[m HW3
+* [33m847e72a[m HW3
+*   [33m2efb80c ([1;33mtag: hw3[m[33m)[m Merge branch 'hw3-recipe-tests' of https://github.com/ctb/cse491-drinkz
+[32m|[m[33m\[m  
+[32m|[m * [33mdba3bd4[m more test for recipe functionality (HW 3)
+[32m|[m * [33mffb9794[m tests for recipe functionality
+* [33m|[m   [33mcf9fa5c[m Merge branch 'hw3-tests' of https://github.com/ctb/cse491-drinkz
+[34m|[m[35m\[m [33m\[m  
+[34m|[m * [33m|[m [33m642353a[m fixed test bug noted by chuy2412
+[34m|[m * [33m|[m [33m6b889cb[m test & data file for hw3
+[34m|[m [33m|[m[33m/[m  
+* [33m|[m [33m7a51357[m HW2
+[33m|[m[33m/[m  
+*   [33m41d59a5[m Merge branch 'output_types'
+[36m|[m[1;31m\[m  
+[36m|[m * [33m46cfdb7[m added get_liquor_inventory and associated print script
+* [1;31m|[m   [33m910ba0f[m Merge branch 'script'
+[1;32m|[m[1;33m\[m [1;31m\[m  
+[1;32m|[m * [1;31m|[m [33mc5e5bc1[m implemented simple bulk load script w/tests
+[1;32m|[m [1;31m|[m[1;31m/[m  
+* [1;31m|[m [33md24c798[m added function to retrieve liquor amount
+[1;31m|[m[1;31m/[m  
+* [33m44460d7[m fixed final tests
+*   [33m64091f0[m Merge branch 'master' into test_fix
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [33md0cd560[m updated with the story so far
+[1;34m|[m * [33m5becf21[m added test stub for bulk loading of bottle types
+* [1;35m|[m [33m91cc4a7[m fixed tests
+[1;35m|[m[1;35m/[m  
+* [33me571e48[m changed load_inventory arguments to use singleton db
+* [33m377e0f0[m initial commit
